@@ -10,6 +10,18 @@ export const ProviderConfigSchema = z.object({
 });
 
 /**
+ * Custom provider configuration schema
+ */
+export const CustomProviderConfigSchema = z.object({
+  apiKey: z.string(),
+  model: z.string(),
+  baseUrl: z.string().optional(),
+  baseURL: z.string().optional(),
+  apiBase: z.string().optional(),
+  enabled: z.boolean().optional().default(true),
+});
+
+/**
  * Providers configuration schema
  */
 export const ProvidersConfigSchema = z.object({
@@ -25,6 +37,7 @@ export const ProvidersConfigSchema = z.object({
   moonshot: ProviderConfigSchema.optional(),
   zhipu: ProviderConfigSchema.optional(),
   vllm: ProviderConfigSchema.optional(),
+  custom: z.union([CustomProviderConfigSchema, z.array(CustomProviderConfigSchema)]).optional(),
 });
 
 /**
@@ -178,7 +191,7 @@ export const ConfigSchema = z.object({
   agents: AgentsConfigSchema.optional().default({}),
   tools: ToolsConfigSchema.optional().default({}),
   channels: ChannelsConfigSchema.optional().default({}),
-});
+}).passthrough();
 
 /**
  * Configuration type inferred from schema

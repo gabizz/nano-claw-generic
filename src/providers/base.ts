@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { Message, LLMResponse, ToolDefinition, ToolCall } from '../types';
+import { Message, LLMResponse, ToolDefinition, ToolCall, CustomProviderConfig } from '../types';
 import { ProviderError } from '../utils/errors';
 import { logger } from '../utils/logger';
 
@@ -69,6 +69,9 @@ export abstract class BaseProvider {
   constructor(apiKey: string, apiBase?: string) {
     this.apiKey = apiKey;
     this.apiBase = apiBase || this.getDefaultApiBase();
+    if (!this.apiBase.endsWith('/')) {
+      this.apiBase += '/';
+    }
     this.client = axios.create({
       baseURL: this.apiBase,
       headers: {
@@ -136,7 +139,7 @@ export class OpenRouterProvider extends BaseProvider {
         requestData.tools = tools;
       }
 
-      const response = await this.client.post<OpenRouterResponse>('/chat/completions', requestData);
+      const response = await this.client.post<OpenRouterResponse>('chat/completions', requestData);
 
       const choice = response.data.choices[0];
       const message = choice.message;
@@ -205,7 +208,7 @@ export class AnthropicProvider extends BaseProvider {
         requestData.tools = tools.map((t) => t.function);
       }
 
-      const response = await this.client.post<AnthropicResponse>('/messages', requestData, {
+      const response = await this.client.post<AnthropicResponse>('messages', requestData, {
         headers: {
           'anthropic-version': '2023-06-01',
           'x-api-key': this.apiKey,
@@ -273,7 +276,7 @@ export class OpenAIProvider extends BaseProvider {
         requestData.tools = tools;
       }
 
-      const response = await this.client.post<OpenRouterResponse>('/chat/completions', requestData);
+      const response = await this.client.post<OpenRouterResponse>('chat/completions', requestData);
 
       const choice = response.data.choices[0];
       const message = choice.message;
@@ -293,5 +296,61 @@ export class OpenAIProvider extends BaseProvider {
     } catch (error) {
       handleProviderError(error, 'OpenAI');
     }
+  }
+}
+
+/**
+ * Custom provider - handles one or more custom model configurations
+ */
+export class CustomProvider extends BaseProvider {
+  private configs: CustomProviderConfig[];
+  private providers: Map<string, OpenAIProvider> = new Map();
+
+  constructor(config: CustomProviderConfig | CustomProviderConfig[]) {
+    // CustomProvider itself doesn't use a single API key or base URL
+    super('dummy-key', 'https://dummy.api');
+    this.configs = Array.isArray(config) ? config : [config];
+  }
+
+  protected getDefaultApiBase(): string {
+    return 'https://dummy.api';
+  }
+
+  /**
+   * Get or create an OpenAIProvider instance for a specific model
+   */
+  private getProviderForModel(model: string): OpenAIProvider {
+    if (this.providers.has(model)) {
+      return this.providers.get(model)!;
+    }
+
+    const config = this.configs.find((c) => c.model === model);
+    if (!config) {
+      throw new ProviderError(`Model ${model} not found in custom provider configurations`);
+    }
+
+    if (config.enabled === false) {
+      throw new ProviderError(`Custom provider model ${model} is disabled`);
+    }
+
+    const apiBase = config.apiBase || config.baseUrl || config.baseURL;
+    if (!apiBase) {
+      throw new ProviderError(`Model ${model} in custom provider requires a base URL (apiBase, baseUrl, or baseURL)`);
+    }
+
+    const provider = new OpenAIProvider(config.apiKey, apiBase);
+    this.providers.set(model, provider);
+    return provider;
+  }
+
+  async complete(
+    messages: Message[],
+    model: string,
+    temperature = 0.7,
+    maxTokens = 4096,
+    tools?: ToolDefinition[]
+  ): Promise<LLMResponse> {
+    const provider = this.getProviderForModel(model);
+    return provider.complete(messages, model, temperature, maxTokens, tools);
   }
 }

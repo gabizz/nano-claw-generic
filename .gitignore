@@ -41,6 +41,11 @@ temp/
 
 # Configuration (user data)
 .nano-claw/
+config.json
+*.json
+!package.json
+!tsconfig.json
+!config.example.json
 
 # OS files
 Thumbs.db

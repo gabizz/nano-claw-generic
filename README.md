@@ -15,10 +15,13 @@
 
 **nano-claw** is a TypeScript + Node.js implementation of [nanobot](https://github.com/HKUDS/nanobot), an ultra-lightweight personal AI assistant inspired by [OpenClaw](https://github.com/openclaw/openclaw).
 
+This repository is a fork aimed at extending the original functionality, including support for custom OpenAI-compatible providers and enhanced model flexibility.
+
 - 🪶 **Ultra-Lightweight**: Just ~4,500 lines of core TypeScript code
 - 🔬 **Research-Ready**: Clean, readable code that's easy to understand and extend
 - ⚡️ **Lightning Fast**: Minimal footprint for faster startup and lower resource usage
 - 💎 **Easy-to-Use**: Simple configuration and intuitive CLI
+- 🤖 **Customizable**: Now supports any OpenAI-compatible API endpoint via the `custom` provider! ✨ NEW
 
 ## 🏗️ Architecture
 
@@ -64,9 +67,10 @@ Support for multiple LLM providers:
 - OpenAI (GPT)
 - DeepSeek
 - Groq
-- Gemini
+- Gemini (Native or via Custom Provider for **Gemini 3.1**)
 - MiniMax
 - **AiHubMix** (API gateway, all models) ✨ NEW
+- **Custom Provider** (Connect to ANY OpenAI-compatible endpoint) 🚀 ENHANCED
 - Dashscope (Qwen)
 - Moonshot (Kimi)
 - Zhipu (GLM)
@@ -182,15 +186,21 @@ Comprehensive examples to help you get started and master nano-claw:
 Configuration file location: `~/.nano-claw/config.json`
 
 See [CONFIGURATION.md](documentation/CONFIGURATION.md) for detailed configuration options including:
-- All 11 LLM providers setup
+- All LLM providers setup
 - Agent behavior customization
 - Tool execution security
 - Chat channel integrations
 - Environment variables
 
-## 🤝 Contributing
+## 🤝 Credits & Acknowledgments
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+This project is built upon the incredible work of the following projects and authors:
+
+- **Original Project**: [nano-claw](https://github.com/hustcc/nano-claw) by [hustcc](https://github.com/hustcc)
+- **Core Inspiration**: [nanobot](https://github.com/HKUDS/nanobot) by HKUDS
+- **Conceptual Roots**: [OpenClaw](https://github.com/openclaw/openclaw)
+
+Special thanks to [hustcc](https://github.com/hustcc) and the open-source community for providing the underlying frameworks and inspiration for this project.
 
 ## 📄 License
 

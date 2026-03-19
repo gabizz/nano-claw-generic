@@ -143,6 +143,47 @@ Get your key: https://makersuite.google.com/app/apikey
 }
 ```
 
+### Custom Provider (OpenAI-compatible)
+
+nano-claw supports a `custom` provider that accepts one or more OpenAI-compatible configurations. This is useful for specialty providers or local LLMs not listed above.
+
+The `custom` provider accepts either a single configuration object or an array of configuration objects. For consistency with other providers, `apiBase` is the preferred field for the base URL, but `baseUrl` and `baseURL` are also supported for convenience.
+
+**Single custom model:**
+
+```json
+{
+  "providers": {
+    "custom": {
+      "apiKey": "your-api-key",
+      "model": "gemini-3.1-pro-preview",
+      "apiBase": "https://api.example.com/v1"
+    }
+  }
+}
+```
+
+**Multiple custom models:**
+
+```json
+{
+  "providers": {
+    "custom": [
+      {
+        "apiKey": "key-1",
+        "model": "model-1",
+        "apiBase": "https://api1.example.com/v1"
+      },
+      {
+        "apiKey": "key-2",
+        "model": "model-2",
+        "apiBase": "https://api2.example.com/v1"
+      }
+    ]
+  }
+}
+```
+
 ### Multiple Providers
 
 You can configure multiple providers. The agent will automatically select the appropriate provider based on the model name:

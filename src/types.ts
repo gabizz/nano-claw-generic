@@ -88,6 +88,18 @@ export interface Skill {
 }
 
 /**
+ * Custom provider configuration
+ */
+export interface CustomProviderConfig {
+  apiKey: string;
+  model: string;
+  baseUrl?: string;
+  baseURL?: string;
+  apiBase?: string;
+  enabled?: boolean;
+}
+
+/**
  * Provider configuration
  */
 export interface ProviderConfig {
