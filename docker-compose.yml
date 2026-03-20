@@ -1,3 +1,4 @@
+version: '3.8' # (Sau versiunea pe care o folosești)
 services:
   nano-claw:
     build:
@@ -5,20 +6,12 @@ services:
       dockerfile: Dockerfile
     container_name: nano-claw
     restart: unless-stopped
-
-    # Mount your config so you can edit it without rebuilding
     volumes:
       - ./config.json:/root/.nano-claw/config.json:ro
-      # Persist memory, logs, and custom skills across restarts
-      - nano-claw-data:/root/.nano-claw
-
-    # Expose if gateway mode serves an HTTP/webhook endpoint
+      - ./data:/root/.nano-claw
+      - ./crontab.txt:/var/spool/cron/crontabs/root
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-
-    command: [ "node", "dist/cli/index.js", "gateway" ]
-
-volumes:
-  nano-claw-data:
+    command: /bin/sh -c "crond -b && node dist/cli/index.js gateway"
