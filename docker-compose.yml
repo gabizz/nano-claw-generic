@@ -15,12 +15,10 @@ services:
     # Expose if gateway mode serves an HTTP/webhook endpoint
     ports:
       - "3000:3000"
-
     environment:
       - NODE_ENV=production
 
-    # Uncomment to run in interactive CLI agent mode instead:
-    command: ["node", "dist/cli/index.js", "gateway"]
+    command: [ "node", "dist/cli/index.js", "gateway" ]
 
 volumes:
   nano-claw-data:
