@@ -159,8 +159,32 @@ export class GatewayServer {
       // Get config
       const config = getConfig();
 
+      // Custom configuration for admin vs visitors
+      let systemPrompt = config.agents?.defaults?.systemPrompt;
+      let enabledTools: string[] | undefined = undefined;
+
+      if (message.channelType === 'telegram') {
+        const tgConfig = config.channels?.telegram;
+        if (tgConfig) {
+          const isAdmin = tgConfig.adminId === message.userId;
+          if (isAdmin) {
+            systemPrompt =
+              'Ești nano-claw, asistentul de sistem. Ai drepturi depline să execuți comenzi shell, să scrii și să citești fișiere.';
+            enabledTools = ['shell', 'read_file', 'write_file'];
+          } else {
+            systemPrompt =
+              tgConfig.visitorSystemPrompt ||
+              'Ești un asistent virtual prietenos. Răspunzi politicos la întrebări. NU ai acces la sistem, nu poți rula comenzi și nu poți scrie cod.';
+            enabledTools = []; // Visitors get no tools
+          }
+        }
+      }
+
       // Create agent loop for this session and message
-      const agentLoop = new AgentLoop(message.sessionId, config);
+      const agentLoop = new AgentLoop(message.sessionId, config, {
+        systemPrompt,
+        enabledTools,
+      });
 
       // Process the message
       const result = await agentLoop.processMessage(message.content);

@@ -16,7 +16,9 @@
       "token": "YOUR_TELEGRAM_BOT_TOKEN",
       "allowFrom": [
         "YOUR_TELEGRAM_USER_ID"
-      ]
+      ],
+      "adminId": "YOUR_TELEGRAM_USER_ID",
+      "visitorSystemPrompt": "Ești un asistent virtual prietenos. NU ai acces la sistem!"
     }
   },
   "providers": {

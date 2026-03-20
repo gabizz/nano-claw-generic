@@ -63,6 +63,7 @@ export interface AgentConfig {
   temperature?: number;
   maxTokens?: number;
   systemPrompt?: string;
+  enabledTools?: string[];
 }
 
 /**

@@ -61,16 +61,30 @@ export class AgentLoop {
    */
   private registerBuiltInTools(config: Config): void {
     const toolsConfig = config.tools;
+    const enabledTools = this.config.enabledTools;
 
-    this.toolRegistry.register(
-      new ShellTool(
-        toolsConfig?.restrictToWorkspace,
-        toolsConfig?.allowedCommands,
-        toolsConfig?.deniedCommands
-      )
-    );
-    this.toolRegistry.register(new ReadFileTool());
-    this.toolRegistry.register(new WriteFileTool());
+    const shouldEnable = (toolName: string) => {
+      if (!enabledTools) return true;
+      return enabledTools.includes(toolName);
+    };
+
+    if (shouldEnable('shell')) {
+      this.toolRegistry.register(
+        new ShellTool(
+          toolsConfig?.restrictToWorkspace,
+          toolsConfig?.allowedCommands,
+          toolsConfig?.deniedCommands
+        )
+      );
+    }
+
+    if (shouldEnable('read_file')) {
+      this.toolRegistry.register(new ReadFileTool());
+    }
+
+    if (shouldEnable('write_file')) {
+      this.toolRegistry.register(new WriteFileTool());
+    }
   }
 
   /**
